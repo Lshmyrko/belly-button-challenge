@@ -2,7 +2,6 @@ const jsonUrl = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classr
 
 // Use D3 to fetch the JSON file
 d3.json(jsonUrl).then(function(data) {
-  // Assuming the data is an array of samples
   const samples = data.samples;
 
   // Sort samples by sample_values for the first sample
