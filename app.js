@@ -1,66 +1,151 @@
-const jsonUrl = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json";
+// Specify the path to your JSON file
+var jsonFilePath = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json";
 
-// Use D3 to fetch the JSON file
-d3.json(jsonUrl).then(function(data) {
-  const samples = data.samples;
+// Use D3 to load the JSON data
+d3.json(jsonFilePath).then(function(data) {
+  // Log the loaded data to the console to verify
+  console.log(data);
 
-  // Sort samples by sample_values for the first sample
-  let sortedSample = samples[0].sample_values.slice(0).sort((a, b) => b - a);
-  let top10SampleValues = sortedSample.slice(0, 10);
-  top10SampleValues.reverse();
+  // Initialize the page
+  init(data);
+});
 
-  // Get corresponding otu_ids and otu_labels
-  let top10OtuIds = samples[0].otu_ids.slice(0, 10).map(otuId => `OTU ${otuId}`).reverse();
-  let top10OtuLabels = samples[0].otu_labels.slice(0, 10).reverse();
+// Function to initialize the page
+function init(data) {
+  // Populate dropdown menu with Test Subject IDs
+  var dropdown = d3.select("#selDataset");
 
-  // Create trace for bar chart
-  let trace1 = {
-    x: top10SampleValues,
-    y: top10OtuIds,
-    text: top10OtuLabels,
+  data.names.forEach(function(name) {
+    dropdown.append("option").text(name).property("value", name);
+  });
+
+  // Initial data rendering
+  var initialSubjectId = data.names[0];
+  updateCharts(data, initialSubjectId);
+}
+
+// Function to update charts based on selected Test Subject ID
+function optionChanged(selectedSubjectId) {
+  updateCharts(data, selectedSubjectId);
+}
+
+// Function to update charts with data for the selected Test Subject ID
+function updateCharts(data, subjectId) {
+  var selectedSample = data.samples.find(sample => sample.id === subjectId);
+
+  // Sort the data and get the top 10 values
+  var sortedData = selectedSample.sample_values.slice().sort((a, b) => b - a);
+  var topValues = sortedData.slice(0, 10);
+
+  // Reverse the arrays for horizontal bar chart
+  var reversedValues = topValues.reverse();
+  var reversedIds = selectedSample.otu_ids.slice(0, 10).reverse();
+  var reversedLabels = selectedSample.otu_labels.slice(0, 10).reverse();
+
+  // Create the trace for the bar chart
+  var trace1 = {
+    x: reversedValues,
+    y: reversedIds.map(id => `OTU ${id}`),
+    text: reversedLabels,
     type: "bar",
     orientation: "h"
   };
 
-  let data = [trace1];
-
-  let layout = {
-    title: "Top 10 OTUs per Sample",
+  // Data array for the plot
+  var barData = [trace1];
+// Layout for the bar chart
+var barLayout = {
     xaxis: { title: "Sample Values" },
     yaxis: { title: "OTU IDs" }
   };
 
-  
-  Plotly.newPlot("plot", data, layout);
+  // Update the bar chart
+  Plotly.newPlot("bar", barData, barLayout);
+};
 
-  // Create dropdown menu
-  let dropdownMenu = d3.select("#selDataset");
+// Specify the path to your JSON file
+var jsonFilePath = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json";
 
-  // Populate dropdown with sample IDs
-  samples.forEach(sample => {
-    dropdownMenu.append("option").text(sample.id).property("value", sample.id);
+// Use D3 to load the JSON data
+d3.json(jsonFilePath).then(function(data) {
+  // Log the loaded data to the console to verify
+  console.log(data);
+
+  // Initialize the page
+  init(data);
+});
+
+// Function to initialize the page
+function init(data) {
+  // Populate dropdown menu with Test Subject IDs
+  var dropdown = d3.select("#selDataset");
+
+  data.names.forEach(function(name) {
+    dropdown.append("option").text(name).property("value", name);
   });
 
-  // Set up event listener for dropdown change
-  dropdownMenu.on("change", updatePlot);
-  
-  // Initial plot for the first sample
-  updatePlot();
+  // Initial data rendering
+  var initialSubjectId = data.names[0];
+  updateCharts(data, initialSubjectId);
+}
 
-  function updatePlot() {
-    let selectedSampleID = dropdownMenu.property("value");
-    let selectedSample = samples.find(sample => sample.id === selectedSampleID);
+// Function to update charts based on selected Test Subject ID
+function optionChanged(selectedSubjectId) {
+  updateCharts(data, selectedSubjectId);
+}
 
-    let traceUpdate = {
-      x: selectedSample.sample_values.slice(0, 10).reverse(),
-      y: selectedSample.otu_ids.slice(0, 10).map(otuID => `OTU ${otuID}`).reverse(),
-      text: selectedSample.otu_labels.slice(0, 10).reverse()
-    };
+// Function to update charts with data for the selected Test Subject ID
+function updateCharts(data, subjectId) {
+  var selectedSample = data.samples.find(sample => sample.id === subjectId);
 
-    // Update the existing plot
-    Plotly.update("plot", [traceUpdate]);
-  }
-}).catch(function(error) {
-  
-  console.error("Error loading JSON data:", error);
-});
+  // Bar Chart
+  var sortedData = selectedSample.sample_values.slice().sort((a, b) => b - a);
+  var topValues = sortedData.slice(0, 10);
+  var reversedValues = topValues.reverse();
+  var reversedIds = selectedSample.otu_ids.slice(0, 10).reverse();
+  var reversedLabels = selectedSample.otu_labels.slice(0, 10).reverse();
+
+  var trace1 = {
+    x: reversedValues,
+    y: reversedIds.map(id => `OTU ${id}`),
+    text: reversedLabels,
+    type: "bar",
+    orientation: "h"
+  };
+
+  var barData = [trace1];
+
+  var barLayout = {
+    title: `Top 10 OTUs for Test Subject ${subjectId}`,
+    xaxis: { title: "Sample Values" },
+    yaxis: { title: "OTU IDs" }
+  };
+
+  Plotly.newPlot("bar", barData, barLayout);
+
+  // Bubble Chart
+  var trace2 = {
+    x: selectedSample.otu_ids,
+    y: selectedSample.sample_values,
+    mode: "markers",
+    marker: {
+      size: selectedSample.sample_values,
+      color: selectedSample.otu_ids,
+      colorscale: "Earth"
+    },
+    text: selectedSample.otu_labels
+  };
+
+  var bubbleData = [trace2];
+
+  var bubbleLayout = {
+    title: `OTU Bubble Chart for Test Subject ${subjectId}`,
+    xaxis: { title: "OTU IDs" },
+    yaxis: { title: "Sample Values" }
+  };
+
+  Plotly.newPlot("bubble", bubbleData, bubbleLayout);
+};
+
+
+
