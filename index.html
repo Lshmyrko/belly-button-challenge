@@ -22,7 +22,7 @@
       <div class="col-md-2">
         <div class="well">
           <h5>Test Subject ID No.:</h5>
-          <select id="selDataset" onchange="optionChanged(this.value)"></select>
+          <select id="selDataset" onchange="optionChanged(this.value)"></select> 
         </div>
         <div class="panel panel-primary">
           <div class="panel-heading">
@@ -49,7 +49,23 @@
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
   <script src="./static/js/app.js"></script>
   <script src="./static/js/bonus.js"></script>
+
+  <script>
+    // Specify the path to your JSON file
+    var jsonFilePath = "https://2u-data-curriculum-team.s3.amazonaws.com/dataviz-classroom/v1.1/14-Interactive-Web-Visualizations/02-Homework/samples.json";
+
+    // Use D3 to load the JSON data without displaying it immediately
+    d3.json(jsonFilePath).then(function(data) {
+      // Now you can perform any actions with the loaded data
+      // For example, log it to the console
+      console.log(data);
+      
+      // You can also process the data or use it to update your charts or DOM elements
+      // ...
+    });
+  </script>
   
 </body>
 
 </html>
+
